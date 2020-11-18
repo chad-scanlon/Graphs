@@ -1,3 +1,10 @@
+import time
+import random
+import os
+import sys
+sys.path.append(f'{os.getcwd()}/projects/graph')
+from util import Stack, Queue
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -45,8 +52,25 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
+        
+        possible_friendships = []
+
+        for user_id in self.users:
+            for friend_id in range(user_id +  1, self.last_id + 1):
+                possible_friendships.append((user_id, friend_id))
+
+        
+        random.shuffle(possible_friendships)
 
         # Create friendships
+        n = num_users * avg_friendships // 2
+        for i in range(n):
+            friendship = possible_friendships[i]
+            user_id = friendship[0]
+            friend_id = friendship[1]
+            self.add_friendship(user_id, friend_id)
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,8 +81,21 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
+        q = Queue()
+        q.enqueue([user_id])
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        while q.size() > 0:
+            path = q.dequeue()
+            vertex = path[-1]
+
+            if vertex not in visited:
+                visited[vertex] = path
+
+                for friendship in self.friendships[vertex]:
+                    new_path = list(path)
+                    new_path.append(friendship)
+                    q.enqueue(new_path)
         return visited
 
 
